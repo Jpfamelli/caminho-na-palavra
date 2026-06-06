@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3b2f26">
+<title>Caminho na Palavra — Plano de Leitura Bíblica</title>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Caminho na Palavra">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4efe6; --bg2:#fffdf9; --ink:#2c2620; --muted:#857a6b;
+    --brand:#5a4632; --brand2:#7c6044; --gold:#bd934e; --gold-soft:#f3e8d2;
+    --line:#e8dfce; --ok:#3f7d52; --soft:#f1ead9; --card:#ffffff;
+    --shadow:0 8px 30px rgba(70,50,20,.10); --shadow-sm:0 3px 12px rgba(70,50,20,.07);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:linear-gradient(180deg,#f6f1e8 0%,#efe6d5 100%);
+    background-attachment:fixed;
+    color:var(--ink); line-height:1.65; min-height:100vh; padding-bottom:80px;
+    -webkit-font-smoothing:antialiased; font-size:16px;
+  }
+  h1,h2,h3{font-family:'Playfair Display',Georgia,serif; color:var(--brand); line-height:1.22; letter-spacing:.2px}
+  h2{font-size:23px;margin:0 0 6px}
+  h3{font-size:18px}
+  a{color:var(--brand2)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 18px}
+
+  header{
+    background:radial-gradient(130% 150% at 50% -30%,#7a5f42 0%,#4a3826 60%,#3b2d1f 100%);
+    color:#f6ecda; padding:30px 0 26px; text-align:center; position:relative; overflow:hidden;
+  }
+  header::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 120%,rgba(189,147,78,.25),transparent 60%);pointer-events:none}
+  header .cross{font-size:30px;opacity:.9}
+  header h1{color:#fdf6e8;margin:8px 0 3px;font-size:30px;font-weight:800;position:relative}
+  header p{margin:2px 0 0;opacity:.88;font-size:14.5px;font-style:italic;font-family:'Lora',serif}
+  #greeting{margin-top:14px;font-size:15px;background:rgba(255,255,255,.13);
+    backdrop-filter:blur(4px);display:inline-block;padding:7px 18px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.18)}
+
+  nav{position:sticky;top:0;z-index:30;background:rgba(255,253,249,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);box-shadow:0 2px 14px rgba(70,50,20,.06)}
+  nav .tabs{display:flex;gap:4px;overflow-x:auto;max-width:900px;margin:0 auto;padding:9px 12px;scrollbar-width:thin}
+  nav .tabs::-webkit-scrollbar{height:5px}
+  nav .tabs::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
+  nav button{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;font-family:inherit;
+    padding:9px 14px;border-radius:11px;cursor:pointer;white-space:nowrap;transition:.18s}
+  nav button:hover{background:var(--soft);color:var(--brand)}
+  nav button.active{background:var(--brand);color:#fff;box-shadow:var(--shadow-sm)}
+
+  .view{display:none;animation:fade .35s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  section.view{padding-top:24px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:20px 22px;margin:16px 0;box-shadow:var(--shadow)}
+  .card h2{margin-top:0}
+  .lead{color:var(--muted);font-size:15px;margin:.3em 0 1em}
+  .pill{display:inline-block;background:var(--soft);color:var(--brand);font-size:12px;
+    font-weight:600;padding:4px 11px;border-radius:999px;margin:3px 5px 3px 0;border:1px solid var(--line)}
+  .verse{border-left:4px solid var(--gold);background:linear-gradient(90deg,#fbf5e9,#fffdf9);
+    padding:12px 16px;border-radius:0 12px 12px 0;margin:11px 0;
+    font-family:'Lora',Georgia,serif;font-size:16px;font-style:italic;color:#403526}
+  .verse small{display:block;color:var(--brand2);font-family:'Inter',sans-serif;font-weight:700;
+    font-style:normal;margin-top:5px;font-size:13px}
+  .ref{font-weight:700;color:var(--brand)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+
+  button.btn{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:11px 18px;
+    font-weight:600;cursor:pointer;font-size:14.5px;font-family:inherit;transition:.18s}
+  button.btn:hover{background:var(--brand2);transform:translateY(-1px)}
+  button.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+  button.btn.ghost:hover{background:var(--soft)}
+  button.btn.ok{background:var(--ok)}
+  button.btn.ok:hover{background:#356b46}
+
+  .progress{height:15px;background:var(--soft);border-radius:999px;overflow:hidden;margin:10px 0;border:1px solid var(--line)}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--ok));width:0;transition:width .5s;border-radius:999px}
+  .stat{font-size:13.5px;color:var(--muted)}
+
+  /* segmented control */
+  .seg{display:inline-flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px;border:1px solid var(--line);flex-wrap:wrap}
+  .seg button{border:0;background:transparent;padding:9px 14px;border-radius:9px;font-weight:600;
+    font-family:inherit;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s}
+  .seg button.active{background:#fff;color:var(--brand);box-shadow:var(--shadow-sm)}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 4px}
+  .filters input{padding:9px 11px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;width:120px}
+
+  /* month accordions */
+  details.month{border:1px solid var(--line);border-radius:14px;margin:12px 0;background:#fffdf9;overflow:hidden;box-shadow:var(--shadow-sm)}
+  details.month > summary{cursor:pointer;padding:15px 18px;font-weight:700;color:var(--brand);
+    list-style:none;display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:17px}
+  details.month > summary::-webkit-details-marker{display:none}
+  details.month > summary .mpct{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:700;
+    background:var(--gold-soft);color:var(--brand);padding:3px 10px;border-radius:999px}
+  details.month[open] > summary{border-bottom:1px solid var(--line);background:var(--soft)}
+  .moverview{padding:12px 16px 2px;display:flex;flex-wrap:wrap}
+  .daywrap{padding:6px 14px 14px}
+
+  .day{display:flex;align-items:flex-start;gap:13px;padding:12px 13px;border:1px solid var(--line);
+    border-radius:13px;margin:9px 0;background:#fff;transition:.18s}
+  .day.done{background:#f1f7f1;border-color:#cfe6cf}
+  .day .num{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--gold-soft);
+    color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:13px;font-family:'Inter'}
+  .day.done .num{background:var(--ok);color:#fff}
+  .day .body{flex:1;min-width:0}
+  .day .read{font-size:14.5px;margin:2px 0}
+  .day label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--muted);margin-top:6px}
+  .day input[type=checkbox]{width:19px;height:19px;accent-color:var(--ok);cursor:pointer}
+  .tag-at,.tag-nt,.tag-ps{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:7px;margin-right:7px;display:inline-block}
+  .tag-at{background:#e7eef7;color:#39577d}
+  .tag-nt{background:#f4e8f1;color:#7a3a63}
+  .tag-ps{background:#eef3e4;color:#4c6b2f}
+
+  /* accordion FAQ */
+  .faqcat{margin:22px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--gold-soft);color:var(--brand2)}
+  details.qa{border:1px solid var(--line);border-radius:12px;margin:9px 0;background:#fffdf9;overflow:hidden}
+  details.qa summary{cursor:pointer;padding:14px 44px 14px 16px;font-weight:600;color:var(--brand);
+    list-style:none;position:relative;font-size:15px}
+  details.qa summary::-webkit-details-marker{display:none}
+  details.qa summary::after{content:"+";position:absolute;right:17px;top:12px;color:var(--gold);font-size:22px;font-weight:400}
+  details.qa[open] summary::after{content:"–"}
+  details.qa[open] summary{background:var(--soft)}
+  details.qa .ans{padding:12px 16px 15px;color:var(--ink);font-size:14.5px;border-top:1px solid var(--line)}
+
+  .field{margin:14px 0}
+  .field label{display:block;font-weight:600;color:var(--brand);margin-bottom:5px;font-size:14px}
+  .field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1px solid var(--line);
+    border-radius:11px;font-size:15px;font-family:inherit;background:#fffdf9;color:var(--ink)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--gold-soft);border-color:var(--gold)}
+  .field textarea{min-height:74px;resize:vertical}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:520px){.row2{grid-template-columns:1fr}}
+  .note{font-size:13.5px;color:#6a5d4b;background:linear-gradient(90deg,#fbf3e2,#fffdf9);
+    border:1px dashed var(--gold);border-radius:12px;padding:12px 14px;margin:12px 0}
+  .step{display:flex;gap:13px;margin:11px 0;align-items:flex-start}
+  .step .n{flex:0 0 auto;width:32px;height:32px;border-radius:50%;background:var(--gold);color:#fff;
+    display:grid;place-items:center;font-weight:800;font-family:'Inter';font-size:15px}
+  .step .n.q{background:var(--brand)}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(40px);
+    background:var(--brand);color:#fff;padding:13px 22px;border-radius:999px;box-shadow:var(--shadow);
+    opacity:0;transition:.3s;z-index:60;font-weight:600;font-size:14px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 18px;line-height:1.7}
+  ul{padding-left:20px} li{margin:5px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="cross">✝</div>
+  <h1>Caminho na Palavra</h1>
+  <p>Seu plano para ler e meditar na Bíblia inteira</p>
+  <div id="greeting">Que a paz esteja com você 🌿</div>
+</header>
+
+<nav><div class="tabs" id="tabs"></div></nav>
+
+<div class="wrap">
+
+  <!-- ============ INÍCIO ============ -->
+  <section class="view active" id="inicio">
+    <div class="card">
+      <h2>📖 Leitura de hoje</h2>
+      <p class="lead" id="todayDate"></p>
+      <div id="todayReading"></div>
+      <div class="progress"><i id="barHome"></i></div>
+      <p class="stat" id="statHome"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn ok" id="markToday">✔ Concluir leitura de hoje</button>
+        <button class="btn ghost" data-go="plano">Ver plano completo →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>✨ Versículo do dia</h2>
+      <div class="verse" id="verseDay"></div>
+      <button class="btn ghost" id="newVerse">↻ Outro versículo</button>
+    </div>
+
+    <div class="card">
+      <h2>🕯️ Roteiro do devocional</h2>
+      <p class="lead">Um método simples (S.O.A.P.) para fazer todo dia em poucos minutos:</p>
+      <div class="step"><div class="n">S</div><div><b>Escritura</b> — Leia o trecho de hoje e escreva o versículo que mais tocou você.</div></div>
+      <div class="step"><div class="n">O</div><div><b>Observação</b> — O que o texto diz? Quem fala, para quem, e por quê?</div></div>
+      <div class="step"><div class="n">A</div><div><b>Aplicação</b> — O que isso muda na minha vida hoje?</div></div>
+      <div class="step"><div class="n">P</div><div><b>Prece</b> — Ore de volta o que leu, agradecendo e pedindo.</div></div>
+      <button class="btn ghost" data-go="oracao" style="margin-top:6px">Ver mais métodos de oração →</button>
+    </div>
+  </section>
+
+  <!-- ============ PLANO ANUAL ============ -->
+  <section class="view" id="plano">
+    <div class="card">
+      <h2>🗓️ Plano de 1 ano — Bíblia inteira</h2>
+      <p class="lead">66 livros · 1.189 capítulos · 365 dias. Escolha o estilo que combina com você. Comece em qualquer dia — o que importa é a constância.</p>
+      <div class="seg" id="planSeg">
+        <button data-plan="canonico">📕 Canônico (em ordem)</button>
+        <button data-plan="equilibrado">⚖️ Equilibrado (AT + NT + Salmo)</button>
+      </div>
+      <p class="lead" id="planDesc" style="margin-top:12px"></p>
+      <div class="progress"><i id="barYear"></i></div>
+      <p class="stat" id="statYear"></p>
+      <div class="filters">
+        <input type="number" id="jumpDay" min="1" max="365" placeholder="Ir ao dia nº">
+        <button class="btn ghost" id="jumpBtn">Ir</button>
+        <button class="btn ghost" id="goTodayBtn">📍 Dia de hoje</button>
+        <button class="btn ghost" id="onlyTodo">Só pendentes</button>
+        <button class="btn ghost" id="resetPlan">Zerar</button>
+      </div>
+    </div>
+    <div id="planList"></div>
+  </section>
+
+  <!-- ============ TÓPICOS ============ -->
+  <section class="view" id="topicos">
+    <div class="card">
+      <h2>🏷️ Leitura por temas da vida</h2>
+      <p class="lead">Está passando por algo? Veja o que a Bíblia diz. Cada tema traz <b>o que ler</b>, <b>versículos-chave</b>, uma <b>meditação</b> e uma <b>oração</b>.</p>
+      <input type="text" id="topicSearch" placeholder="🔎 Buscar tema (ex.: medo, perdão, dinheiro)..." style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font-family:inherit;font-size:15px;margin-bottom:10px">
+      <div id="topicChips"></div>
+    </div>
+    <div id="topicCards"></div>
+  </section>
+
+  <!-- ============ DEVOCIONAL / ORAÇÃO ============ -->
+  <section class="view" id="oracao">
+    <div class="card">
+      <h2>🙏 Como orar — Método A.C.T.S.</h2>
+      <p class="lead">Um roteiro para uma oração equilibrada. Use as iniciais como guia:</p>
+      <div class="grid">
+        <div class="verse"><b>A — Adoração</b><br>Louve quem Deus é (santo, bom, fiel).<small>Salmo 29:2 — "Tributai ao Senhor a glória devida ao seu nome."</small></div>
+        <div class="verse"><b>C — Confissão</b><br>Confesse seus pecados e receba o perdão.<small>1 João 1:9 — "Se confessarmos os nossos pecados, ele é fiel para nos perdoar."</small></div>
+        <div class="verse"><b>T — (Tomar) Gratidão</b><br>Agradeça pelas bênçãos concretas.<small>1 Tessalonicenses 5:18 — "Em tudo dai graças."</small></div>
+        <div class="verse"><b>S — Súplica</b><br>Apresente seus pedidos e os dos outros.<small>Filipenses 4:6 — "Sejam conhecidas diante de Deus as vossas petições."</small></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📖 Como meditar — Lectio Divina</h2>
+      <p class="lead">Quatro passos antigos para saborear a Palavra devagar:</p>
+      <div class="step"><div class="n">1</div><div><b>Ler (Lectio)</b> — Leia o texto devagar, 2 ou 3 vezes.</div></div>
+      <div class="step"><div class="n">2</div><div><b>Meditar (Meditatio)</b> — Que palavra salta aos olhos? Por quê?</div></div>
+      <div class="step"><div class="n">3</div><div><b>Orar (Oratio)</b> — Converse com Deus sobre o que leu.</div></div>
+      <div class="step"><div class="n">4</div><div><b>Contemplar (Contemplatio)</b> — Fique em silêncio na presença Dele e descanse.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>📝 Dicas para um devocional constante</h2>
+      <ul>
+        <li><b>Mesmo horário, mesmo lugar.</b> O hábito nasce da rotina; manhãs costumam funcionar melhor.</li>
+        <li><b>Comece pequeno.</b> 10 minutos fiéis valem mais que 1 hora esporádica.</li>
+        <li><b>Tenha um caderno.</b> Anote o versículo, o que entendeu e um pedido de oração.</li>
+        <li><b>Memorize 1 versículo por semana</b> e repita em voz alta todos os dias.</li>
+        <li><b>Ative os lembretes</b> deste app na aba Configurações.</li>
+        <li><b>Termine sempre orando</b> aquilo que leu de volta para Deus.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>✝ Modelo do Pai Nosso</h2>
+      <p class="lead">Jesus ensinou a orar assim (Mateus 6:9-13). Use cada linha como ponto de partida:</p>
+      <div class="verse">Pai nosso que estás nos céus — <i>relacionamento</i><br>
+      Santificado seja o teu nome — <i>adoração</i><br>
+      Venha o teu Reino — <i>propósito</i><br>
+      O pão nosso de cada dia dá-nos hoje — <i>provisão</i><br>
+      Perdoa as nossas dívidas — <i>perdão</i><br>
+      Não nos deixes cair em tentação — <i>proteção</i></div>
+    </div>
+  </section>
+
+  <!-- ============ DÚVIDAS ============ -->
+  <section class="view" id="duvidas">
+    <div class="card">
+      <h2>❓ Dúvidas frequentes</h2>
+      <p class="lead">As perguntas mais comuns de quem começa (ou recomeça) a ler a Bíblia, por categoria.</p>
+      <input type="text" id="faqSearch" placeholder="🔎 Buscar dúvida..." style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font-family:inherit;font-size:15px">
+      <div id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- ============ CONFIGURAÇÕES ============ -->
+  <section class="view" id="config">
+    <div class="card">
+      <h2>⚙️ Meu perfil</h2>
+      <div class="row2">
+        <div class="field"><label>Seu nome</label><input id="cfgName" placeholder="Como devo te chamar?"></div>
+        <div class="field"><label>Idade</label><input id="cfgAge" type="number" min="1" max="120" placeholder="Ex.: 28"></div>
+      </div>
+      <div class="field"><label>Meu objetivo com a Bíblia</label>
+        <select id="cfgGoalSelect">
+          <option value="">Selecione um objetivo...</option>
+          <option>Ler a Bíblia inteira em 1 ano</option>
+          <option>Conhecer melhor a Deus / crescer na fé</option>
+          <option>Criar o hábito do devocional diário</option>
+          <option>Encontrar paz e direção em uma fase difícil</option>
+          <option>Entender melhor o evangelho de Jesus</option>
+          <option>Memorizar mais a Palavra</option>
+          <option>Outro (escrever abaixo)</option>
+        </select>
+      </div>
+      <div class="field"><label>Descreva seu objetivo (opcional)</label>
+        <textarea id="cfgGoalText" placeholder="Ex.: Quero ler todo dia de manhã e aplicar à minha vida..."></textarea>
+      </div>
+      <button class="btn ok" id="saveProfile">💾 Salvar perfil</button>
+    </div>
+
+    <div class="card">
+      <h2>🔔 Lembretes do devocional</h2>
+      <p class="lead">Permita que o app envie notificações para você não esquecer de ler e orar.</p>
+
+      <button class="btn" id="enableNotif">🔓 Ativar / permitir notificações</button>
+      <p class="stat" id="notifStatus" style="margin:10px 0"></p>
+
+      <div class="row2">
+        <div class="field"><label>Horário do 1º lembrete</label><input id="cfgStart" type="time" value="07:00"></div>
+        <div class="field"><label>Quantos lembretes por dia</label>
+          <select id="cfgCount">
+            <option value="1">1 vez</option><option value="2">2 vezes</option>
+            <option value="3">3 vezes</option><option value="4">4 vezes</option>
+            <option value="5">5 vezes</option><option value="6">6 vezes</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Intervalo entre os lembretes</label>
+        <select id="cfgInterval">
+          <option value="30">30 minutos</option>
+          <option value="60">1 hora</option>
+          <option value="120">2 horas</option>
+          <option value="180" selected>3 horas</option>
+          <option value="240">4 horas</option>
+          <option value="360">6 horas</option>
+          <option value="480">8 horas</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn ok" id="saveNotif">💾 Salvar lembretes</button>
+        <button class="btn ghost" id="testNotif">🔔 Testar agora</button>
+      </div>
+      <div class="note" id="notifPreview">Configure acima para ver seus horários de lembrete.</div>
+
+      <label id="autoLaunchRow" style="display:flex;align-items:center;gap:10px;margin:14px 0 4px;font-size:14px;cursor:pointer;color:var(--brand);font-weight:600">
+        <input type="checkbox" id="cfgAutoLaunch" style="width:19px;height:19px;accent-color:var(--ok)">
+        Iniciar com o Windows e rodar em segundo plano (recomendado)
+      </label>
+
+      <div class="note" id="notifHint">
+        ✅ <b>Neste aplicativo</b> as notificações são nativas do Windows e funcionam mesmo com a janela <b>fechada</b> — o app fica rodando na bandeja (perto do relógio). Para sair de vez, clique com o botão direito no ícone da bandeja e escolha “Sair”.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💾 Meus dados</h2>
+      <p class="lead">Tudo fica salvo só neste aparelho — nada é enviado para a internet.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn ghost" id="exportData">⬇ Exportar backup</button>
+        <button class="btn ghost" id="wipeData">🗑 Apagar tudo</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <b>Caminho na Palavra</b> · Versículos na tradução João Ferreira de Almeida (domínio público).<br>
+  Feito com carinho para o seu tempo com Deus. ✝
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DADOS ===================== */
+const BOOKS=[
+ ["Gênesis",50],["Êxodo",40],["Levítico",27],["Números",36],["Deuteronômio",34],
+ ["Josué",24],["Juízes",21],["Rute",4],["1 Samuel",31],["2 Samuel",24],
+ ["1 Reis",22],["2 Reis",25],["1 Crônicas",29],["2 Crônicas",36],["Esdras",10],
+ ["Neemias",13],["Ester",10],["Jó",42],["Salmos",150],["Provérbios",31],
+ ["Eclesiastes",12],["Cânticos",8],["Isaías",66],["Jeremias",52],["Lamentações",5],
+ ["Ezequiel",48],["Daniel",12],["Oseias",14],["Joel",3],["Amós",9],
+ ["Obadias",1],["Jonas",4],["Miqueias",7],["Naum",3],["Habacuque",3],
+ ["Sofonias",3],["Ageu",2],["Zacarias",14],["Malaquias",4],
+ ["Mateus",28],["Marcos",16],["Lucas",24],["João",21],["Atos",28],
+ ["Romanos",16],["1 Coríntios",16],["2 Coríntios",13],["Gálatas",6],["Efésios",6],
+ ["Filipenses",4],["Colossenses",4],["1 Tessalonicenses",5],["2 Tessalonicenses",3],
+ ["1 Timóteo",6],["2 Timóteo",4],["Tito",3],["Filemom",1],["Hebreus",13],
+ ["Tiago",5],["1 Pedro",5],["2 Pedro",3],["1 João",5],["2 João",1],
+ ["3 João",1],["Judas",1],["Apocalipse",22]
+];
+const NT_START=39; // índice do primeiro livro do NT (Mateus)
+
+const VERSES=[
+ ["Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.","João 3:16"],
+ ["O Senhor é o meu pastor; nada me faltará.","Salmo 23:1"],
+ ["Tudo posso naquele que me fortalece.","Filipenses 4:13"],
+ ["Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus.","Isaías 41:10"],
+ ["Lâmpada para os meus pés é a tua palavra, e luz para o meu caminho.","Salmo 119:105"],
+ ["Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.","Mateus 11:28"],
+ ["Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.","Provérbios 3:5"],
+ ["Em tudo dai graças, porque esta é a vontade de Deus em Cristo Jesus para convosco.","1 Tessalonicenses 5:18"],
+ ["O amor é sofredor, é benigno; o amor não arde em ciúmes.","1 Coríntios 13:4"],
+ ["Buscai primeiro o reino de Deus e a sua justiça, e todas estas coisas vos serão acrescentadas.","Mateus 6:33"],
+ ["Aquietai-vos e sabei que eu sou Deus.","Salmo 46:10"],
+ ["As misericórdias do Senhor são a causa de não sermos consumidos; renovam-se cada manhã.","Lamentações 3:22-23"],
+ ["Porque eu bem sei os pensamentos que tenho a vosso respeito: pensamentos de paz e não de mal.","Jeremias 29:11"],
+ ["Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.","Salmo 37:5"],
+ ["Mas os que esperam no Senhor renovarão as suas forças; subirão com asas como águias.","Isaías 40:31"],
+ ["Posso todas as coisas naquele que me fortalece.","Filipenses 4:13"],
+ ["O Senhor é a minha luz e a minha salvação; a quem temerei?","Salmo 27:1"],
+ ["Sede fortes e corajosos... porque o Senhor vosso Deus é convosco.","Josué 1:9"]
+];
+
+const TOPICS=[
+ {tag:"Espiritualidade",icon:"🕊️",desc:"Intimidade e comunhão diária com Deus.",
+  read:"Salmo 63 · Salmo 1 · João 15 · Salmo 42",
+  v:[["Como o cervo brama pelas correntes das águas, assim suspira a minha alma por ti, ó Deus.","Salmo 42:1"],["Permanecei em mim, e eu permanecerei em vós.","João 15:4"]],
+  med:"Espiritualidade não é fazer mais coisas religiosas, é permanecer perto de Deus como um ramo ligado à videira. Reserve um tempo só para estar com Ele, sem pressa.",
+  o:"Pai, sê o centro do meu dia. Que minha alma tenha sede de Ti acima de tudo. Ensina-me a permanecer em Ti. Amém."},
+ {tag:"Amor",icon:"❤️",desc:"O que é amar como Deus ama.",
+  read:"1 Coríntios 13 · 1 João 4 · João 13:34-35 · Romanos 12",
+  v:[["Nisto conhecerão todos que sois meus discípulos: se vos amardes uns aos outros.","João 13:35"],["Nós amamos porque ele nos amou primeiro.","1 João 4:19"]],
+  med:"O amor bíblico é decisão e ação, não só sentimento. Leia 1 Coríntios 13 trocando 'amor' pelo seu nome — onde você precisa crescer?",
+  o:"Senhor, enche meu coração do Teu amor para que eu ame os outros como Tu me amaste. Tira de mim o egoísmo. Amém."},
+ {tag:"Fé",icon:"🌱",desc:"Confiar em Deus mesmo sem ver.",
+  read:"Hebreus 11 · Tiago 1 · Romanos 4 · Marcos 9:14-29",
+  v:[["Ora, a fé é o firme fundamento das coisas que se esperam.","Hebreus 11:1"],["A fé vem pelo ouvir, e o ouvir pela palavra de Deus.","Romanos 10:17"]],
+  med:"A fé cresce ao conhecer quem Deus é. Quanto mais você lê a Palavra, mais a confiança aumenta. Lembre-se de uma vez em que Ele foi fiel.",
+  o:"Deus, creio; ajuda a minha incredulidade. Fortalece minha fé pela Tua Palavra. Amém."},
+ {tag:"Esperança",icon:"🌅",desc:"Para quando o futuro parece escuro.",
+  read:"Romanos 8 · Lamentações 3:19-26 · Salmo 42 · Apocalipse 21",
+  v:[["E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus.","Romanos 8:28"],["Espera no Senhor, anima-te, e ele fortalecerá o teu coração.","Salmo 27:14"]],
+  med:"A esperança cristã não é otimismo vago, é certeza ancorada em Deus, que venceu a morte. Nada que você vive hoje está fora do alcance Dele.",
+  o:"Pai, quando eu não enxergar saída, lembra-me de que seguras o meu amanhã. Renova a minha esperança. Amém."},
+ {tag:"Perdão",icon:"🤝",desc:"Receber e oferecer perdão.",
+  read:"Mateus 18:21-35 · Efésios 4:31-32 · Colossenses 3:12-13 · Salmo 51",
+  v:[["Perdoando-vos uns aos outros, como também Deus vos perdoou em Cristo.","Efésios 4:32"],["Lava-me completamente da minha iniquidade e purifica-me do meu pecado.","Salmo 51:2"]],
+  med:"Guardar mágoa é beber veneno esperando que o outro adoeça. O perdão liberta primeiro quem perdoa. Há alguém para entregar a Deus hoje?",
+  o:"Senhor, recebo o Teu perdão e escolho perdoar quem me feriu. Cura o meu coração. Amém."},
+ {tag:"Ansiedade & Medo",icon:"🌊",desc:"Paz quando a mente não para.",
+  read:"Filipenses 4:4-9 · Mateus 6:25-34 · Salmo 23 · 1 Pedro 5:6-7",
+  v:[["Não estejais inquietos por coisa alguma; antes... sejam conhecidas diante de Deus as vossas petições.","Filipenses 4:6"],["Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.","1 Pedro 5:7"]],
+  med:"A ansiedade tenta carregar amanhãs que ainda não chegaram. Troque cada preocupação por uma oração e por gratidão. Respire e entregue.",
+  o:"Pai, entrego nas Tuas mãos aquilo que me tira o sono. Que a Tua paz guarde o meu coração. Amém."},
+ {tag:"Sabedoria",icon:"🦉",desc:"Decisões à luz de Deus.",
+  read:"Provérbios 1–4 · Tiago 1:5 · Eclesiastes 3 · Salmo 119",
+  v:[["O temor do Senhor é o princípio do conhecimento.","Provérbios 1:7"],["E, se algum de vós tem falta de sabedoria, peça-a a Deus.","Tiago 1:5"]],
+  med:"Sabedoria é aplicar a verdade de Deus à vida real. Leia um capítulo de Provérbios por dia (são 31!) e peça discernimento.",
+  o:"Deus, dá-me sabedoria para escolher o que Te agrada. Guia os meus passos hoje. Amém."},
+ {tag:"Gratidão",icon:"🙌",desc:"Um coração que reconhece bênçãos.",
+  read:"Salmo 100 · Salmo 103 · 1 Tessalonicenses 5:16-18 · Lucas 17:11-19",
+  v:[["Bendize, ó minha alma, ao Senhor, e não te esqueças de nenhum de seus benefícios.","Salmo 103:2"],["Regozijai-vos sempre. Em tudo dai graças.","1 Tessalonicenses 5:16,18"]],
+  med:"A gratidão muda o foco: do que falta para o que já recebi. Liste 3 coisas pelas quais agradecer hoje, mesmo num dia difícil.",
+  o:"Senhor, obrigado pela vida, pelo Teu cuidado e pela Tua salvação. Ensina-me a agradecer sempre. Amém."},
+ {tag:"Família",icon:"🏠",desc:"Casamento, filhos e o lar.",
+  read:"Efésios 5:21–6:4 · Provérbios 31 · Salmo 127–128 · Colossenses 3:18-21",
+  v:[["Quanto a mim e à minha casa, serviremos ao Senhor.","Josué 24:15"],["Se o Senhor não edificar a casa, em vão trabalham os que a edificam.","Salmo 127:1"]],
+  med:"O lar floresce quando Deus está no centro. Ore pela sua família, um por um, e seja o primeiro a servir e perdoar dentro de casa.",
+  o:"Pai, abençoa o meu lar. Que o Teu amor reine entre nós e que eu ame os meus com paciência. Amém."},
+ {tag:"Provação & Sofrimento",icon:"⛰️",desc:"Quando a dor chega.",
+  read:"Jó 1–2 · Romanos 5:1-5 · Tiago 1:2-4 · 2 Coríntios 4:7-18",
+  v:[["Tende grande gozo quando cairdes em várias tentações... a prova da vossa fé produz a paciência.","Tiago 1:2-3"],["Perto está o Senhor dos que têm o coração quebrantado.","Salmo 34:18"]],
+  med:"Deus não desperdiça dor. Ele caminha com você no vale e usa até o sofrimento para formar caráter e esperança. Você não está sozinho.",
+  o:"Senhor, no meio da dor eu me agarro a Ti. Dá-me forças para hoje e sustenta a minha fé. Amém."},
+ {tag:"Arrependimento & Salvação",icon:"✝️",desc:"O coração do evangelho.",
+  read:"Salmo 51 · Romanos 3–5 · Efésios 2:1-10 · Lucas 15",
+  v:[["Porque pela graça sois salvos, por meio da fé... é dom de Deus.","Efésios 2:8"],["Cria em mim, ó Deus, um coração puro.","Salmo 51:10"]],
+  med:"A salvação não se conquista, se recebe. Volte-se a Deus, confesse e confie em Jesus. A festa do céu é por quem se arrepende (Lucas 15).",
+  o:"Jesus, reconheço que preciso de Ti. Perdoa os meus pecados, sê o meu Senhor e Salvador. Amém."},
+ {tag:"Paz & Descanso",icon:"🌿",desc:"Sossego para a alma agitada.",
+  read:"Mateus 11:28-30 · João 14:25-27 · Salmo 46 · Salmo 131",
+  v:[["Deixo-vos a paz, a minha paz vos dou... não se turbe o vosso coração.","João 14:27"],["Tomai sobre vós o meu jugo... e achareis descanso para as vossas almas.","Mateus 11:29"]],
+  med:"O descanso de Deus não depende de tudo estar resolvido. É confiar e parar. Hoje, separe um momento de silêncio diante Dele.",
+  o:"Pai, aquieta o meu coração. Recebo a Tua paz, que excede todo o entendimento. Amém."},
+ {tag:"Solidão",icon:"🌙",desc:"Quando você se sente só.",
+  read:"Salmo 139 · Salmo 25 · Hebreus 13:5-6 · Isaías 41",
+  v:[["Olha para mim e tem piedade de mim, porque estou solitário e aflito.","Salmo 25:16"],["Eis que estou convosco todos os dias, até a consumação dos séculos.","Mateus 28:20"]],
+  med:"Você pode estar sozinho, mas nunca abandonado. Deus promete jamais te deixar. Fale com Ele agora como quem conversa com um amigo presente.",
+  o:"Senhor, na minha solidão eu Te busco. Lembra-me de que estás comigo aqui e agora. Amém."},
+ {tag:"Propósito & Vocação",icon:"🧭",desc:"Para que eu fui criado.",
+  read:"Efésios 2 · Jeremias 1 · Romanos 12 · Salmo 139",
+  v:[["Porque somos feitura sua, criados em Cristo Jesus para as boas obras.","Efésios 2:10"],["O coração do homem planeja o seu caminho, mas o Senhor lhe dirige os passos.","Provérbios 16:9"]],
+  med:"Seu propósito começa em conhecer e amar a Deus, e transborda no jeito como você serve os outros com seus dons. Pergunte: onde posso amar e servir hoje?",
+  o:"Deus, mostra-me para que me criaste. Usa a minha vida para a Tua glória e o bem dos outros. Amém."},
+ {tag:"Luto & Perda",icon:"🌧️",desc:"Consolo na perda de quem amamos.",
+  read:"Salmo 34 · João 11 · 1 Tessalonicenses 4:13-18 · Salmo 23",
+  v:[["Bem-aventurados os que choram, porque eles serão consolados.","Mateus 5:4"],["E Deus limpará de seus olhos toda a lágrima.","Apocalipse 21:4"]],
+  med:"Chorar não é falta de fé — Jesus também chorou (João 11:35). Leve sua dor a Deus sem máscaras; Ele coleciona cada lágrima e promete consolo.",
+  o:"Pai, recebe a minha dor. Console o meu coração e sustenta-me com a esperança da vida eterna. Amém."},
+ {tag:"Tentação",icon:"🛡️",desc:"Força para vencer o pecado.",
+  read:"1 Coríntios 10:1-13 · Tiago 1:12-15 · Mateus 4:1-11 · Hebreus 4:14-16",
+  v:[["Não veio sobre vós tentação, senão humana; mas Deus... vos dará também o escape.","1 Coríntios 10:13"],["Sujeitai-vos a Deus; resisti ao diabo, e ele fugirá de vós.","Tiago 4:7"]],
+  med:"Toda tentação tem uma saída. Jesus venceu citando a Palavra — por isso memorizar versículos é uma arma. Fuja, ore e busque apoio.",
+  o:"Senhor, dá-me forças para resistir e fugir do que me afasta de Ti. Guarda o meu coração. Amém."},
+ {tag:"Identidade em Cristo",icon:"🪞",desc:"Quem eu sou aos olhos de Deus.",
+  read:"2 Coríntios 5 · João 1:12 · Gálatas 2:20 · Salmo 139",
+  v:[["Se alguém está em Cristo, nova criatura é; as coisas velhas já passaram.","2 Coríntios 5:17"],["Eu te louvarei, porque de um modo assombroso e tão maravilhoso fui feito.","Salmo 139:14"]],
+  med:"Sua identidade não vem do que falam de você nem dos seus erros, mas de ser amado e chamado filho de Deus. Leia quem você é em Cristo e creia.",
+  o:"Pai, ajuda-me a viver como Teu filho amado. Que a minha identidade esteja firmada em Ti. Amém."},
+ {tag:"Finanças & Trabalho",icon:"💼",desc:"Dinheiro, trabalho e prioridades.",
+  read:"Provérbios 3:9-10 · Mateus 6:19-24 · Colossenses 3:23-24 · Filipenses 4:11-19",
+  v:[["E tudo quanto fizerdes, fazei-o de todo o coração, como ao Senhor.","Colossenses 3:23"],["O meu Deus suprirá todas as vossas necessidades segundo as suas riquezas.","Filipenses 4:19"]],
+  med:"O dinheiro é bom servo e péssimo senhor. Trabalhe com excelência como para Deus, seja generoso e confie que Ele provê o necessário.",
+  o:"Senhor, ajuda-me a trabalhar com integridade e a confiar na Tua provisão. Que eu não sirva ao dinheiro, mas a Ti. Amém."},
+ {tag:"Generosidade",icon:"🎁",desc:"A alegria de repartir.",
+  read:"2 Coríntios 9:6-11 · Lucas 6:38 · Provérbios 11:24-25 · Atos 20:35",
+  v:[["Cada um contribua segundo propôs no seu coração... porque Deus ama ao que dá com alegria.","2 Coríntios 9:7"],["Dai, e ser-vos-á dado.","Lucas 6:38"]],
+  med:"Quem dá com alegria experimenta uma liberdade que o acúmulo nunca dá. Procure hoje uma forma concreta de abençoar alguém.",
+  o:"Pai, ensina-me a dar com alegria e a confiar que, ao repartir, nada me faltará. Amém."},
+ {tag:"Cura & Saúde",icon:"🩺",desc:"Quando o corpo ou a alma adoecem.",
+  read:"Salmo 103 · Tiago 5:13-16 · Isaías 53 · Salmo 147",
+  v:[["Ele sara os quebrantados de coração e lhes ata as feridas.","Salmo 147:3"],["A oração da fé salvará o doente, e o Senhor o levantará.","Tiago 5:15"]],
+  med:"Leve a Deus sua saúde e a de quem você ama. Ele cura de muitas formas e, mesmo na enfermidade, sustenta com graça e presença.",
+  o:"Senhor, toca a minha vida e a de quem está enfermo. Cura, sustenta e dá-nos paz no Teu tempo. Amém."},
+ {tag:"Direção & Decisões",icon:"🚦",desc:"Saber o caminho a seguir.",
+  read:"Provérbios 3:5-6 · Salmo 32:8 · Tiago 1:5 · Isaías 30:21",
+  v:[["Reconhece-o em todos os teus caminhos, e ele endireitará as tuas veredas.","Provérbios 3:6"],["Instruir-te-ei e ensinar-te-ei o caminho que deves seguir.","Salmo 32:8"]],
+  med:"Diante de uma decisão: ore pedindo sabedoria, busque a Palavra, pese com conselho sábio e siga em paz, confiando que Deus dirige seus passos.",
+  o:"Deus, diante desta escolha eu confio em Ti. Dá-me sabedoria e paz para seguir o Teu caminho. Amém."},
+ {tag:"Domínio Próprio",icon:"⏳",desc:"Disciplina e autocontrole.",
+  read:"Gálatas 5:16-26 · 1 Coríntios 9:24-27 · 2 Timóteo 1:7 · Provérbios 25:28",
+  v:[["Porque Deus não nos deu o espírito de temor, mas de fortaleza, de amor e de moderação.","2 Timóteo 1:7"],["Como a cidade derrubada, sem muros, assim é o homem que não pode conter o seu espírito.","Provérbios 25:28"]],
+  med:"O domínio próprio é fruto do Espírito, não força de vontade isolada. Caminhe perto de Deus e Ele dará firmeza para os bons hábitos.",
+  o:"Espírito Santo, produz em mim domínio próprio. Ajuda-me a ser fiel nas pequenas escolhas de cada dia. Amém."}
+];
+
+const FAQ=[
+ {cat:"🌱 Começando",items:[
+  ["Por onde devo começar a ler a Bíblia?","Se é sua primeira vez, comece pelo Evangelho de <b>João</b> (conhecer Jesus), depois <b>Marcos</b> e <b>Atos</b> (a igreja nascendo). Para a devoção diária, acrescente <b>Salmos</b> e <b>Provérbios</b>. Depois, siga o Plano Anual deste app."],
+  ["Antigo e Novo Testamento: qual a diferença?","O <b>Antigo</b> (39 livros) conta a criação, a aliança com Israel e aponta para o Messias. O <b>Novo</b> (27 livros) revela Jesus, sua igreja e o futuro. Juntos contam uma só história: a promessa (AT) e o cumprimento (NT)."],
+  ["O que é um devocional?","É um tempo curto e diário para se encontrar com Deus: ler um trecho da Bíblia, refletir sobre o que Ele está dizendo e orar. Não é estudo acadêmico — é relacionamento."],
+  ["Preciso ler na ordem, de Gênesis a Apocalipse?","Não é obrigatório. Ler em ordem ajuda a entender a história, mas pode travar em livros como Levítico. Use o modo <b>Equilibrado</b> deste app, que mistura AT, NT e Salmos a cada dia."],
+  ["Quanto tempo por dia eu preciso?","Comece com 10 a 15 minutos. O plano pede em média 3 a 4 capítulos por dia. Constância vale mais que duração: melhor todo dia um pouco do que muito de vez em quando."]
+ ]},
+ {cat:"🔥 Constância & Hábito",items:[
+  ["Como manter a constância sem desanimar?","(1) Mesmo horário e lugar todo dia; (2) ative os <b>lembretes</b> nas Configurações; (3) comece pequeno; (4) tenha um caderno; (5) não desista por uma falha — recomece no dia seguinte sem culpa."],
+  ["Perdi vários dias do plano. Recomeço do zero?","De jeito nenhum! Não é uma corrida com prazo. Continue de onde parou ou pule para a leitura de hoje (botão 📍 Dia de hoje). O objetivo é o encontro com Deus, não bater meta."],
+  ["Qual o melhor horário para ler?","O que você conseguir manter! Muitos preferem de manhã, para começar o dia com Deus (Salmo 5:3). Outros à noite. O importante é escolher um horário fixo e proteger esse tempo."],
+  ["Como memorizar versículos?","Escolha 1 por semana; escreva num papel e cole onde você vê; repita em voz alta de manhã e à noite; tente recitar para alguém. Repetição + uso = memória."],
+  ["Não 'sinto' nada quando leio. Está errado?","Não. Fé não é movida por emoção, mas por confiança. Há dias secos — continue assim mesmo. A Palavra trabalha em você como semente, mesmo sem você perceber (Marcos 4)."]
+ ]},
+ {cat:"📖 Entendimento & Interpretação",items:[
+  ["Não entendi um trecho. O que faço?","Normal! (1) Leia o <b>contexto</b> — versículos antes e depois; (2) veja quem fala e para quem; (3) compare com outra tradução; (4) use uma Bíblia de estudo ou pergunte a um líder de confiança. Anote a dúvida e siga — muita coisa se esclarece adiante."],
+  ["Como interpretar a Bíblia corretamente?","Três princípios: (1) <b>Contexto</b> — nunca isole um versículo; (2) a Bíblia se explica pela própria Bíblia; (3) pergunte 'o que isto significava para quem ouviu primeiro?' antes de 'o que significa para mim?'. Leia sempre buscando a Cristo."],
+  ["A Bíblia se contradiz?","Trechos que parecem se chocar quase sempre se resolvem com contexto, gênero do texto (poesia, história, profecia) e tradução. Quando surgir uma dúvida assim, compare as passagens e consulte uma boa Bíblia de estudo."],
+  ["Como achar um versículo (ex.: 'João 3:16')?","O primeiro nome é o <b>livro</b>; o primeiro número é o <b>capítulo</b>; o número após os dois-pontos é o <b>versículo</b>. Então 'João 3:16' = livro de João, capítulo 3, versículo 16."],
+  ["Por que existem livros tão difíceis (Levítico, profetas)?","Eles mostram a santidade de Deus, o peso do pecado e a necessidade de um Salvador — tudo apontando para Jesus. Não trave: leia em ritmo mais leve e foque no quadro geral, não em cada detalhe."]
+ ]},
+ {cat:"🙏 Oração & Vida espiritual",items:[
+  ["Posso orar com minhas próprias palavras?","Sim! Deus quer sinceridade, não palavras bonitas. Fale como quem conversa com um Pai amoroso. Se travar, use o método A.C.T.S. ou o Pai Nosso como roteiro (aba Devocional)."],
+  ["Quanto tempo devo orar?","Não há regra. Comece com 5 minutos e deixe crescer naturalmente. Vale mais orar pouco e sincero, e ao longo do dia, do que só uma vez de forma mecânica."],
+  ["Como sei se Deus está me respondendo?","Deus responde pela Palavra, por paz interior, por portas que se abrem ou fecham e por conselho sábio. Às vezes a resposta é 'sim', 'não' ou 'espere'. Confie no caráter Dele mesmo sem entender tudo."],
+  ["Preciso ler tudo todo dia para Deus me aceitar?","Não. Você não é amado por ler a Bíblia; você lê porque já é amado. A salvação é dom da graça (Efésios 2:8-9). A leitura é resposta de amor, não exigência para ser aceito."]
+ ]},
+ {cat:"📚 Tradução & Recursos",items:[
+  ["Qual tradução da Bíblia devo usar?","Para entender fácil: <b>NVI</b>, <b>NVT</b> ou <b>NTLH</b>. Para um texto mais clássico: <b>Almeida (ARA/ACF)</b>. O ideal é ter uma fácil para o dia a dia e, se quiser, uma mais literal para estudo."],
+  ["Bíblia de papel ou aplicativo?","Os dois servem! Papel ajuda a focar e marcar; app é prático e tem busca e áudio. Use o que te fizer ler mais. Este app indica o que ler — depois é só abrir sua Bíblia preferida no trecho."],
+  ["O que é uma Bíblia de estudo?","É uma Bíblia com notas de rodapé, introduções e mapas que explicam o contexto de cada trecho. Ótima para tirar dúvidas enquanto lê."],
+  ["Por que algumas Bíblias têm mais livros (apócrifos)?","Bíblias católicas incluem alguns livros (deuterocanônicos) que as protestantes não trazem, por diferenças históricas sobre o cânon. Os 66 livros centrais são comuns a todas."]
+ ]},
+ {cat:"📱 Sobre este app",items:[
+  ["Como funcionam os lembretes/notificações?","Em Configurações, toque em <b>Permitir notificações</b>, escolha o horário do 1º lembrete, quantos por dia e o intervalo entre eles. O app te lembrará de fazer o devocional nesses horários."],
+  ["As notificações funcionam com o app fechado?","Por ser um app de navegador, os lembretes disparam enquanto a aba estiver <b>aberta</b> (pode estar minimizada). Para funcionar com tudo fechado, é preciso transformar em app instalável (PWA) ou nativo — peça que eu faço."],
+  ["Meus dados ficam salvos? Vão para a internet?","Tudo é salvo apenas <b>neste aparelho/navegador</b> (progresso e perfil). Nada é enviado para a internet. Você pode exportar um backup ou apagar tudo em Configurações."],
+  ["Posso usar no celular?","Sim! Abra o arquivo no navegador do celular e use 'Adicionar à tela inicial' para criar um ícone, como se fosse um app."],
+  ["Como troco entre o plano Canônico e o Equilibrado?","Na aba <b>Plano Anual</b>, no botão de seleção do topo. <b>Canônico</b> lê de Gênesis a Apocalipse em ordem; <b>Equilibrado</b> mistura Antigo Testamento, Novo Testamento e um Salmo a cada dia."]
+ ]}
+];
+
+/* ===================== ARMAZENAMENTO ===================== */
+const LS={
+ get:(k,d)=>{try{const v=localStorage.getItem("cnp_"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+ set:(k,v)=>{try{localStorage.setItem("cnp_"+k,JSON.stringify(v))}catch(e){}},
+ del:k=>{try{localStorage.removeItem("cnp_"+k)}catch(e){}}
+};
+
+/* ===================== GERAÇÃO DOS PLANOS ===================== */
+function distribute(flat,days){
+ const total=flat.length, base=Math.floor(total/days), extra=total-base*days;
+ const out=[]; let idx=0;
+ for(let d=0;d<days;d++){
+  let size=base;
+  if(Math.floor((d+1)*extra/days)>Math.floor(d*extra/days)) size++;
+  out.push(flat.slice(idx,idx+size)); idx+=size;
+ }
+ return out;
+}
+function formatChunk(chunk){
+ const parts=[]; let i=0;
+ while(i<chunk.length){
+  const book=chunk[i][0]; let start=chunk[i][1], end=start; i++;
+  while(i<chunk.length && chunk[i][0]===book && chunk[i][1]===end+1){end=chunk[i][1];i++;}
+  parts.push(start===end?`${book} ${start}`:`${book} ${start}–${end}`);
+ }
+ return parts.join(" · ");
+}
+// Canônico
+const flatAll=[]; BOOKS.forEach(([n,c])=>{for(let i=1;i<=c;i++)flatAll.push([n,i]);});
+const CAN_CHUNKS=distribute(flatAll,365);
+const CAN=CAN_CHUNKS.map(formatChunk);
+// Equilibrado
+const atF=[],ntF=[],psF=[];
+BOOKS.forEach(([n,c],bi)=>{for(let i=1;i<=c;i++){
+ if(bi>=NT_START) ntF.push([n,i]); else if(n==="Salmos") psF.push([n,i]); else atF.push([n,i]);
+}});
+const EQ_A=distribute(atF,365), EQ_N=distribute(ntF,365), EQ_P=distribute(psF,365);
+// meses (12 grupos de ~30)
+const MONTH_SIZES=distribute(new Array(365).fill(0),12).map(a=>a.length);
+function monthOfDay(d){let acc=0;for(let m=0;m<12;m++){acc+=MONTH_SIZES[m];if(d<=acc)return m;}return 11;}
+
+/* ===================== NAVEGAÇÃO ===================== */
+const TABS=[["inicio","Início"],["plano","Plano Anual"],["topicos","Tópicos"],
+ ["oracao","Devocional"],["duvidas","Dúvidas"],["config","Configurações"]];
+const tabsEl=document.getElementById("tabs");
+TABS.forEach(([id,label])=>{const b=document.createElement("button");b.textContent=label;b.dataset.tab=id;b.onclick=()=>show(id);tabsEl.appendChild(b);});
+function show(id){
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));
+ document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
+
+/* ===================== TOAST ===================== */
+let toastT; function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2700);}
+
+/* ===================== DIA ATUAL ===================== */
+function dayOfYear(){const n=new Date();const s=new Date(n.getFullYear(),0,0);return Math.min(365,Math.max(1,Math.floor((n-s)/86400000)));}
+const TODAY=dayOfYear();
+
+/* ===================== INÍCIO ===================== */
+function planTodayHTML(day){
+ const type=LS.get("planType","canonico");
+ if(type==="canonico") return `<div class="verse" style="font-size:16px"><b>📌 ${CAN[day-1]}</b></div>`;
+ let h="";
+ const at=formatChunk(EQ_A[day-1]), nt=formatChunk(EQ_N[day-1]), ps=formatChunk(EQ_P[day-1]);
+ if(at) h+=`<div class="read"><span class="tag-at">AT</span> <b>${at}</b></div>`;
+ if(nt) h+=`<div class="read"><span class="tag-nt">NT</span> <b>${nt}</b></div>`;
+ if(ps) h+=`<div class="read"><span class="tag-ps">Salmo</span> <b>${ps}</b></div>`;
+ return `<div class="verse" style="font-size:15px">${h}</div>`;
+}
+function renderHome(){
+ const d=new Date();
+ document.getElementById("todayDate").textContent="Dia "+TODAY+" do plano · "+d.toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ document.getElementById("todayReading").innerHTML=planTodayHTML(TODAY);
+ updateProgress(); randomVerse();
+}
+function updateProgress(){
+ const done=LS.get("done",{});
+ const count=Object.values(done).filter(Boolean).length;
+ const pct=Math.round(count/365*100);
+ const bh=document.getElementById("barHome"), by=document.getElementById("barYear");
+ if(bh) bh.style.width=pct+"%"; if(by) by.style.width=pct+"%";
+ const sh=document.getElementById("statHome"); if(sh) sh.textContent=`${count} de 365 dias concluídos (${pct}%)`;
+ const sy=document.getElementById("statYear"); if(sy) sy.textContent=`${count} de 365 dias concluídos · ${pct}% da Bíblia`;
+ const mt=document.getElementById("markToday"); if(mt) mt.textContent=done[TODAY]?"✔ Hoje já concluído (desfazer)":"✔ Concluir leitura de hoje";
+}
+document.getElementById("markToday").onclick=()=>{
+ const done=LS.get("done",{}); done[TODAY]=!done[TODAY]; LS.set("done",done);
+ updateProgress(); renderPlan(); toast(done[TODAY]?"Que Deus fale ao seu coração! 🙏":"Marcação desfeita");
+};
+function randomVerse(){const v=VERSES[Math.floor(Math.random()*VERSES.length)];document.getElementById("verseDay").innerHTML=`"${v[0]}"<small>— ${v[1]}</small>`;}
+document.getElementById("newVerse").onclick=randomVerse;
+
+/* ===================== PLANO ANUAL ===================== */
+let showOnlyTodo=false;
+function setPlanType(type){
+ LS.set("planType",type);
+ document.querySelectorAll("#planSeg button").forEach(b=>b.classList.toggle("active",b.dataset.plan===type));
+ document.getElementById("planDesc").innerHTML = type==="canonico"
+  ? "📕 <b>Canônico:</b> leitura em ordem, de Gênesis a Apocalipse (~3 a 4 capítulos/dia)."
+  : "⚖️ <b>Equilibrado:</b> a cada dia um trecho do Antigo Testamento, do Novo Testamento e um Salmo — para não enjoar e ver a Bíblia inteira no ano.";
+ renderPlan(); renderHome();
+}
+function dayContent(dn,type){
+ if(type==="canonico") return `<div class="read"><b>${CAN[dn-1]}</b></div>`;
+ let h=""; const at=formatChunk(EQ_A[dn-1]),nt=formatChunk(EQ_N[dn-1]),ps=formatChunk(EQ_P[dn-1]);
+ if(at) h+=`<div class="read"><span class="tag-at">AT</span> ${at}</div>`;
+ if(nt) h+=`<div class="read"><span class="tag-nt">NT</span> ${nt}</div>`;
+ if(ps) h+=`<div class="read"><span class="tag-ps">Salmo</span> ${ps}</div>`;
+ return h;
+}
+function dayBooks(dn,type,set){
+ if(type==="canonico"){CAN_CHUNKS[dn-1].forEach(([b])=>set.add(b));}
+ else{[EQ_A,EQ_N,EQ_P].forEach(arr=>arr[dn-1].forEach(([b])=>set.add(b)));}
+}
+function renderPlan(){
+ const done=LS.get("done",{}), type=LS.get("planType","canonico");
+ const list=document.getElementById("planList"); list.innerHTML="";
+ const todayMonth=monthOfDay(TODAY);
+ let dayStart=1;
+ for(let mi=0;mi<12;mi++){
+  const dayEnd=dayStart+MONTH_SIZES[mi]-1;
+  let inner="", mDone=0; const bookSet=new Set();
+  for(let dn=dayStart;dn<=dayEnd;dn++){
+   if(done[dn]) mDone++;
+   dayBooks(dn,type,bookSet);
+   if(showOnlyTodo && done[dn]) continue;
+   const isToday = dn===TODAY;
+   inner+=`<div class="day${done[dn]?" done":""}" id="day${dn}">
+     <div class="num">${dn}${isToday?'<br><span style="font-size:9px">hoje</span>':''}</div>
+     <div class="body">${dayContent(dn,type)}
+       <label><input type="checkbox" ${done[dn]?"checked":""} data-day="${dn}"> Concluído</label>
+     </div></div>`;
+  }
+  const mPct=Math.round(mDone/MONTH_SIZES[mi]*100);
+  const overview=[...bookSet].map(b=>`<span class="pill">${b}</span>`).join("");
+  list.innerHTML+=`<details class="month" ${mi===todayMonth?"open":""}>
+    <summary>📅 Mês ${mi+1} <span style="font-weight:400;font-size:13px;color:var(--muted)">· dias ${dayStart}–${dayEnd}</span><span class="mpct">${mPct}%</span></summary>
+    <div class="moverview">${overview}</div>
+    <div class="daywrap">${inner||'<p class="lead" style="padding:8px">Todos os dias deste mês já foram concluídos! 🎉</p>'}</div>
+  </details>`;
+  dayStart=dayEnd+1;
+ }
+ list.querySelectorAll("input[type=checkbox]").forEach(cb=>{
+  cb.onchange=()=>{const done=LS.get("done",{});done[cb.dataset.day]=cb.checked;LS.set("done",done);
+   const row=cb.closest(".day");row.classList.toggle("done",cb.checked);updateProgress();
+   if(showOnlyTodo&&cb.checked)row.remove();};
+ });
+}
+document.querySelectorAll("#planSeg button").forEach(b=>b.onclick=()=>setPlanType(b.dataset.plan));
+function jumpTo(n){
+ if(!(n>=1&&n<=365))return;
+ showOnlyTodo=false; document.getElementById("onlyTodo").textContent="Só pendentes"; renderPlan();
+ setTimeout(()=>{const el=document.getElementById("day"+n);if(el){const dt=el.closest("details");if(dt)dt.open=true;el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="2px solid var(--gold)";setTimeout(()=>el.style.outline="",1800);}},60);
+}
+document.getElementById("jumpBtn").onclick=()=>jumpTo(parseInt(document.getElementById("jumpDay").value));
+document.getElementById("goTodayBtn").onclick=()=>jumpTo(TODAY);
+document.getElementById("onlyTodo").onclick=e=>{showOnlyTodo=!showOnlyTodo;e.target.textContent=showOnlyTodo?"Mostrar todos":"Só pendentes";renderPlan();};
+document.getElementById("resetPlan").onclick=()=>{if(confirm("Zerar todo o progresso do plano?")){LS.set("done",{});renderPlan();updateProgress();toast("Progresso zerado");}};
+
+/* ===================== TÓPICOS ===================== */
+let topicFilter="all", topicQuery="";
+function renderTopics(){
+ const chips=document.getElementById("topicChips"), cards=document.getElementById("topicCards");
+ chips.innerHTML=`<span class="pill" data-f="all" style="cursor:pointer;${topicFilter==='all'?'background:var(--brand);color:#fff':''}">Todos</span>`+
+  TOPICS.map(t=>`<span class="pill" data-f="${t.tag}" style="cursor:pointer;${topicFilter===t.tag?'background:var(--brand);color:#fff':''}">${t.icon} ${t.tag}</span>`).join("");
+ chips.querySelectorAll("[data-f]").forEach(c=>c.onclick=()=>{topicFilter=c.dataset.f;renderTopics();});
+ const q=topicQuery.toLowerCase();
+ const filtered=TOPICS.filter(t=>{
+  const okF=topicFilter==='all'||t.tag===topicFilter;
+  const okQ=!q||(t.tag+" "+t.desc+" "+t.med).toLowerCase().includes(q);
+  return okF&&okQ;
+ });
+ cards.innerHTML = filtered.length? filtered.map(t=>{
+  const vs=t.v.map(v=>`<div class="verse">"${v[0]}"<small>— ${v[1]}</small></div>`).join("");
+  return `<div class="card"><h2>${t.icon} ${t.tag}</h2><p class="lead">${t.desc}</p>
+   <p><span class="pill">📖 Leia</span> <span class="ref">${t.read}</span></p>${vs}
+   <p><b>🕯️ Meditação:</b> ${t.med}</p><p><b>🙏 Oração:</b> <i>${t.o}</i></p></div>`;
+ }).join("") : `<div class="card"><p class="lead">Nenhum tema encontrado para "${topicQuery}".</p></div>`;
+}
+document.getElementById("topicSearch").oninput=e=>{topicQuery=e.target.value;renderTopics();};
+
+/* ===================== DÚVIDAS / FAQ ===================== */
+function renderFAQ(query){
+ const el=document.getElementById("faqList"); const q=(query||"").toLowerCase();
+ let html="";
+ FAQ.forEach(group=>{
+  const items=group.items.filter(([qq,aa])=>!q||(qq+" "+aa).toLowerCase().includes(q));
+  if(!items.length) return;
+  html+=`<h3 class="faqcat">${group.cat}</h3>`;
+  items.forEach(([qq,aa])=>{html+=`<details class="qa"><summary>${qq}</summary><div class="ans">${aa}</div></details>`;});
+ });
+ el.innerHTML = html || `<p class="lead">Nenhuma dúvida encontrada para "${query}".</p>`;
+}
+document.getElementById("faqSearch").oninput=e=>renderFAQ(e.target.value);
+
+/* ===================== CONFIGURAÇÕES ===================== */
+function loadProfile(){
+ const p=LS.get("profile",{}), n=p.notif||{};
+ document.getElementById("cfgName").value=p.name||"";
+ document.getElementById("cfgAge").value=p.age||"";
+ document.getElementById("cfgGoalSelect").value=p.goalSel||"";
+ document.getElementById("cfgGoalText").value=p.goalText||"";
+ document.getElementById("cfgStart").value=n.start||"07:00";
+ document.getElementById("cfgCount").value=String(n.count||1);
+ document.getElementById("cfgInterval").value=String(n.intervalMin||180);
+ greet(); updateNotifPreview();
+}
+function greet(){
+ const p=LS.get("profile",{}), h=new Date().getHours();
+ const s=h<12?"Bom dia":h<18?"Boa tarde":"Boa noite";
+ const g=document.getElementById("greeting");
+ g.innerHTML = p.name ? `${s}, <b>${p.name}</b>! 🌿`+(p.goalSel?`<br><span style="font-size:12px;opacity:.85">🎯 ${p.goalSel}</span>`:"") : "Que a paz esteja com você 🌿";
+}
+document.getElementById("saveProfile").onclick=()=>{
+ const p=LS.get("profile",{});
+ p.name=document.getElementById("cfgName").value.trim();
+ p.age=document.getElementById("cfgAge").value;
+ p.goalSel=document.getElementById("cfgGoalSelect").value;
+ p.goalText=document.getElementById("cfgGoalText").value.trim();
+ LS.set("profile",p); greet(); toast("Perfil salvo! 🙌");
+};
+
+/* ---- notificações ---- */
+const IS_ELECTRON = !!(window.api && window.api.isElectron);
+const MSGS=["vamos ler a Palavra hoje?","reserve um tempinho com Deus 🌿","seu devocional está te esperando 🙏","alimente a alma com a Palavra ✝","um momento de paz com Deus agora?"];
+
+function notifSettings(){
+ const n=(LS.get("profile",{}).notif)||{};
+ return {start:n.start||"07:00", count:Math.max(1,Math.min(6,n.count||1)), intervalMin:Math.max(15,n.intervalMin||180)};
+}
+function scheduledTimes(){
+ const {start,count,intervalMin}=notifSettings();
+ const [h,m]=start.split(":").map(Number); const base=h*60+m; const out=[];
+ for(let i=0;i<count;i++){const t=base+i*intervalMin; if(t>=24*60) break; out.push(String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0"));}
+ return out;
+}
+function updateNotifPreview(){
+ const el=document.getElementById("notifPreview");
+ const times=scheduledTimes();
+ el.innerHTML = times.length
+  ? `📅 Você receberá <b>${times.length}</b> lembrete(s) por dia, às: <b>${times.join(" · ")}</b>.`
+  : "Configure o horário e a quantidade de lembretes acima.";
+}
+/* envia a configuração de lembretes para o processo principal (Electron) */
+function pushConfigToApp(){
+ if(!IS_ELECTRON) return;
+ const p=LS.get("profile",{}); const s=notifSettings();
+ try{ window.api.setNotifConfig({start:s.start,count:s.count,intervalMin:s.intervalMin,name:p.name||""}); }catch(e){}
+}
+function notifState(){
+ const el=document.getElementById("notifStatus");
+ if(IS_ELECTRON){
+  el.innerHTML="✅ <b>Notificações nativas ativas.</b> Funcionam mesmo com a janela fechada — o app continua na bandeja do Windows.";
+  return;
+ }
+ if(!("Notification" in window)){el.textContent="❌ Este navegador não suporta notificações.";return;}
+ if(location.protocol==="file:"){
+  el.innerHTML="⚠️ Aberto como arquivo no navegador: as notificações ficam <b>bloqueadas</b> pelo sistema. Use o <b>aplicativo instalado</b> para receber os lembretes.";
+  return;
+ }
+ const p=Notification.permission;
+ if(p==="granted") el.innerHTML="✅ <b>Notificações permitidas.</b> Os lembretes serão enviados nos horários abaixo (com a janela aberta).";
+ else if(p==="denied") el.innerHTML="🚫 <b>Notificações bloqueadas.</b> Libere no cadeado 🔒 da barra de endereço e recarregue.";
+ else el.innerHTML="🔔 Notificações ainda não permitidas. Toque no botão acima.";
+}
+document.getElementById("enableNotif").onclick=async()=>{
+ if(IS_ELECTRON){
+  pushConfigToApp();
+  window.api.testNotif({title:"Caminho na Palavra ✝", body:"Tudo pronto! Vou te lembrar do devocional. 🌿"});
+  notifState(); toast("Notificações ativas! 🔔"); return;
+ }
+ if(!("Notification" in window)){toast("Navegador sem suporte a notificações");return;}
+ const r=await Notification.requestPermission(); notifState();
+ if(r==="granted"){toast("Notificações permitidas! 🔔"); fireNotif("Caminho na Palavra ✝","Tudo pronto! 🌿",true);}
+ else toast("Permissão negada — use o aplicativo instalado");
+};
+["cfgStart","cfgCount","cfgInterval"].forEach(id=>document.getElementById(id).onchange=updateNotifPreview);
+document.getElementById("saveNotif").onclick=()=>{
+ const p=LS.get("profile",{});
+ p.notif={start:document.getElementById("cfgStart").value||"07:00",
+          count:parseInt(document.getElementById("cfgCount").value)||1,
+          intervalMin:parseInt(document.getElementById("cfgInterval").value)||180};
+ LS.set("profile",p); LS.del("firedSlots"); updateNotifPreview(); pushConfigToApp(); notifState();
+ toast("Lembretes salvos! 🔔");
+ if(!IS_ELECTRON && ("Notification" in window) && Notification.permission!=="granted") toast("Toque em 'Ativar / permitir notificações'");
+};
+document.getElementById("testNotif").onclick=()=>{
+ const name=(LS.get("profile",{}).name)||"";
+ const body=(name?name+", ":"")+"separe um tempo com Deus. Hoje: "+ (LS.get("planType","canonico")==="canonico"?CAN[TODAY-1]:formatChunk(EQ_A[TODAY-1]));
+ if(IS_ELECTRON){ window.api.testNotif({title:"Hora do devocional 🙏", body}); return; }
+ fireNotif("Hora do devocional 🙏", body);
+};
+function fireNotif(title,body,silent){
+ if(IS_ELECTRON){ try{window.api.testNotif({title,body});}catch(e){} return; }
+ if(!("Notification" in window)||Notification.permission!=="granted"){if(!silent)toast("Permita as notificações primeiro");return;}
+ try{new Notification(title,{body,icon:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='14' fill='%235a4632'/%3E%3Ctext x='50%25' y='52' font-size='46' text-anchor='middle' fill='%23f6ecda'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E",tag:"cnp-devocional"});}
+ catch(e){if(!silent)toast("Não foi possível notificar");}
+}
+/* botão: iniciar com o Windows (só no app instalado) */
+(async function initAutoLaunch(){
+ const row=document.getElementById("autoLaunchRow"), box=document.getElementById("cfgAutoLaunch");
+ if(!IS_ELECTRON || !window.api.getAutoLaunch){ if(row) row.style.display="none"; return; }
+ try{ box.checked = await window.api.getAutoLaunch(); }catch(e){}
+ box.onchange=async()=>{ try{ const v=await window.api.setAutoLaunch(box.checked); box.checked=!!v; toast(v?"Vai iniciar com o Windows ✅":"Início automático desligado"); }catch(e){} };
+})();
+/* agendador interno só no navegador; no app, o agendamento roda no processo principal */
+if(!IS_ELECTRON){
+ setInterval(()=>{
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
+  const now=new Date();
+  const hhmm=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  const dayKey=now.toDateString();
+  let fired=LS.get("firedSlots",{}); if(fired._day!==dayKey) fired={_day:dayKey,list:[]};
+  if(scheduledTimes().includes(hhmm) && !fired.list.includes(hhmm)){
+   fired.list.push(hhmm); LS.set("firedSlots",fired);
+   const p=LS.get("profile",{}); const name=p.name?p.name+", ":"";
+   fireNotif("Hora do devocional 🙏", name+MSGS[Math.floor(Math.random()*MSGS.length)]);
+  }
+ },30000);
+}
+
+/* ---- dados ---- */
+document.getElementById("exportData").onclick=()=>{
+ const data={profile:LS.get("profile",{}),done:LS.get("done",{}),planType:LS.get("planType","canonico")};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="caminho-na-palavra-backup.json"; a.click();
+ toast("Backup baixado 💾");
+};
+document.getElementById("wipeData").onclick=()=>{
+ if(confirm("Apagar TODOS os dados (perfil, progresso e lembretes)? Não dá para desfazer.")){
+  LS.del("profile");LS.del("done");LS.del("planType");LS.del("firedSlots");
+  loadProfile();setPlanType("canonico");renderHome();toast("Dados apagados");
+ }
+};
+
+/* ===================== INICIALIZAÇÃO (cada bloco isolado) ===================== */
+function safe(fn,label){try{fn();}catch(e){console.error("Erro em "+label,e);}}
+safe(()=>setPlanType(LS.get("planType","canonico")),"plano");
+safe(renderHome,"inicio");
+safe(renderTopics,"topicos");
+safe(()=>renderFAQ(""),"faq");
+safe(loadProfile,"perfil");
+safe(notifState,"notif");
+safe(updateNotifPreview,"preview");
+safe(pushConfigToApp,"pushcfg");
+
+/* ===================== PWA: service worker + instalação ===================== */
+(function(){
+ if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('service-worker.js').catch(()=>{}); });
+ }
+ const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+ const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+ let deferred = null;
+
+ // botão flutuante de instalar
+ const btn = document.createElement('button');
+ btn.id = 'pwaInstall';
+ btn.textContent = '⤓ Instalar app';
+ btn.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:80;background:#5a4632;color:#fff;border:0;border-radius:999px;padding:12px 18px;font-weight:700;font-family:inherit;font-size:14px;box-shadow:0 8px 30px rgba(70,50,20,.25);cursor:pointer;display:none';
+ document.body.appendChild(btn);
+
+ window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferred=e; if(!standalone) btn.style.display='block'; });
+ window.addEventListener('appinstalled',()=>{ btn.style.display='none'; if(typeof toast==='function') toast('App instalado! 🎉'); });
+
+ btn.onclick = async ()=>{
+  if(deferred){ deferred.prompt(); try{ await deferred.userChoice; }catch(e){} deferred=null; btn.style.display='none'; return; }
+  if(isIOS){ alert('Para instalar no iPhone:\n\n1) Toque no botão Compartilhar (quadrado com seta ↑) na barra do Safari.\n2) Escolha "Adicionar à Tela de Início".\n3) Toque em "Adicionar".'); return; }
+  alert('Para instalar:\n\nAbra o menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".');
+ };
+ // no iOS não há beforeinstallprompt; mostra o botão com instruções
+ if(isIOS && !standalone) btn.style.display='block';
+})();
+</script>
+</body>
+</html>
